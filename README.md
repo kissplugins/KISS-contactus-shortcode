@@ -2,13 +2,15 @@
 
 The **KISS Contact Us Shortcode** plugin (BETA) does not have any upsell or freemium features. You get it all.
 
-**You get the folowing:**
-Find it under Tools -> Contact Us -> Address and Contact editable area
+**How to Use it:**
+Find it under Tools -> Contact Us -> Address and Contact editable area.
+This area allows you to include hyperlinks and other common HTML formatting styles.
 
 Then you can embed it almost anywhere on the site include Posts, Pages, and Widgets.
-Use the shortcode [contact us] to show that content.
 
-On the content areas, you'll see an "Edit" button at the bottom letting you quickly iterate on it if needed.
+Use the shortcode [contact us] to show that content and have a single place to maintain it.
+
+On the content areas, you'll see an "Edit" button at the bottom taking you to the Editor so you can quickly iterate on it if needed.
 
 **Road Map**
 
