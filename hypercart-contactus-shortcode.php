@@ -3,7 +3,8 @@
  * Plugin Name: Hypercart - Contact Us Shortcode - O1
  * Description: Provides a [contactus] shortcode and a settings page with a rich text editor for company's contact details. Pre-populates from WooCommerce store address on first install. Allows shortcodes in classic and block-based widget areas.
  * Version: 1.0.6
- * Author: Your Name
+ * Author: Hypercart
+ * Author URI: https://kissplugins.com
  * Text Domain: hypercart-contactus
  * Domain Path: /languages
  */
@@ -36,6 +37,14 @@ class Hypercart_ContactUs_Shortcode {
 
         // Enable shortcodes in block-based widgets (WP 5.8+)
         add_filter('widget_block_content', array($this, 'enable_shortcodes_in_block_widgets'), 10, 3);
+
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), array( $this, 'plugin_settings_link'));
+    }
+
+    public function plugin_settings_link($links) {
+        $settings_link = '<a href="/wp-admin/tools.php?page=hypercart-contactus-settings">' . __('Settings', 'hypercart-contactus') . '</a>';
+        $links['settings'] = $settings_link; // Add the settings link at the end
+        return $links;
     }
 
     /**
