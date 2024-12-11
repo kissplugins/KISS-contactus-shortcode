@@ -1,191 +1,185 @@
 <?php
 /**
- * Plugin Name: Hypercart - Contact Us Shortcode - O1
- * Description: Provides a [contactus] shortcode and a settings page with a rich text editor for company's contact details. Pre-populates from WooCommerce store address on first install. Allows shortcodes in classic and block-based widget areas.
- * Version: 1.0.6
- * Author: Your Name
- * Text Domain: hypercart-contactus
- * Domain Path: /languages
+ * Plugin Name: Hello Bar Plugin
+ * Description: Displays a customizable hello bar with a message and a CTA button on the front end.
+ * Version: 1.0.7
+ * Author: Hypercart
+ * Author URI: https://kissplugins.com
  */
 
-// Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly.
 }
 
-class Hypercart_ContactUs_Shortcode {
-
-    private $option_name = 'hypercart_contactus_info';
+class HelloBarPlugin {
+    const OPTION_NAME = 'hello_bar_settings';
 
     public function __construct() {
-        // Load plugin text domain for translations
-        add_action('plugins_loaded', array($this, 'load_textdomain'));
-
-        // Hook to add admin menu (under Tools)
-        add_action('admin_menu', array($this, 'add_settings_page'));
-
-        // Register shortcode
-        add_shortcode('contactus', array($this, 'render_contact_info'));
-
-        // Register plugin settings
-        add_action('admin_init', array($this, 'register_settings'));
-
-        // Enable shortcodes in classic text widgets
-        add_filter('widget_text', 'do_shortcode');
-        add_filter('widget_text_content', 'do_shortcode');
-
-        // Enable shortcodes in block-based widgets (WP 5.8+)
-        add_filter('widget_block_content', array($this, 'enable_shortcodes_in_block_widgets'), 10, 3);
+        add_action('admin_menu', [$this, 'create_settings_page']);
+        add_action('admin_init', [$this, 'register_settings']);
+        add_action('wp_head', [$this, 'enqueue_hello_bar_styles']);
+        add_action('wp_footer', [$this, 'display_hello_bar']);
+        add_filter('plugin_action_links_' . plugin_basename(__FILE__), [$this, 'add_settings_link']);
     }
 
-    /**
-     * Load plugin text domain for i18n
-     */
-    public function load_textdomain() {
-        load_plugin_textdomain('hypercart-contactus', false, dirname(plugin_basename(__FILE__)) . '/languages/');
-    }
-
-    /**
-     * Runs on plugin activation
-     */
-    public static function activate_plugin() {
-        $instance = new self();
-        $current_content = get_option($instance->option_name, '');
-
-        // Only populate if empty
-        if (empty($current_content)) {
-            // Check if WooCommerce is active
-            if (class_exists('WooCommerce')) {
-                $business_name = get_bloginfo('name');
-                $address1 = get_option('woocommerce_store_address', '');
-                $address2 = get_option('woocommerce_store_address_2', '');
-                $city     = get_option('woocommerce_store_city', '');
-                $postcode = get_option('woocommerce_store_postcode', '');
-                $default_country = get_option('woocommerce_default_country', '');
-                
-                $country = $default_country;
-                $state = '';
-                if (strpos($default_country, ':') !== false) {
-                    list($country, $state) = explode(':', $default_country);
-                }
-                
-                // Assemble address format:
-                // Business Name
-                // Address line 1
-                // Address line 2 (if exists)
-                // City, State, ZIP/Postal Code
-                // Country
-                $formatted = $business_name . "\n" .
-                             $address1 . "\n";
-                if (!empty($address2)) {
-                    $formatted .= $address2 . "\n";
-                }
-                
-                $line3_parts = array_filter([$city, $state, $postcode]);
-                $formatted .= implode(', ', $line3_parts) . "\n" . $country;
-                
-                // Update only if we have at least some meaningful data
-                if (trim($formatted) !== '') {
-                    update_option($instance->option_name, wp_kses_post($formatted));
-                }
-            }
-        }
-    }
-
-    /**
-     * Add settings page under "Tools"
-     */
-    public function add_settings_page() {
-        add_management_page(
-            __('Hypercart - Contact Us Shortcode', 'hypercart-contactus'), // Page title
-            __('Contact Us', 'hypercart-contactus'),                       // Menu title
-            'manage_options',                                              // Capability
-            'hypercart-contactus-settings',                                // Menu slug
-            array($this, 'settings_page_html')                             // Callback
+    public function create_settings_page() {
+        add_options_page(
+            'Hello Bar Settings',
+            'Hello Bar',
+            'manage_options',
+            'hello-bar-settings',
+            [$this, 'settings_page_content']
         );
     }
 
-    /**
-     * Output the HTML for the settings page
-     */
-    public function settings_page_html() {
-        if ( ! current_user_can('manage_options') ) {
-            return;
-        }
+    public function register_settings() {
+        register_setting(self::OPTION_NAME, self::OPTION_NAME, [$this, 'sanitize_settings']);
+    }
 
-        // Check if the form is submitted
-        if ( isset($_POST['hypercart_contactus_submit']) && check_admin_referer('hypercart_contactus_save', 'hypercart_contactus_nonce') ) {
-            $raw_content = isset($_POST['hypercart_contactus_editor']) ? wp_unslash($_POST['hypercart_contactus_editor']) : '';
-            $content = wp_kses_post($raw_content);
-            update_option($this->option_name, $content);
-            echo '<div class="updated"><p>' . __('Contact information saved successfully.', 'hypercart-contactus') . '</p></div>';
-        }
-
-        // Get the stored content
-        $content = get_option($this->option_name, '');
+    public function settings_page_content() {
+        $settings = get_option(self::OPTION_NAME, []);
         ?>
         <div class="wrap">
-            <h1><?php _e('Hypercart - Contact Us Shortcode', 'hypercart-contactus'); ?></h1>
-            <form method="post" action="">
-                <?php
-                wp_nonce_field('hypercart_contactus_save', 'hypercart_contactus_nonce');
-
-                $editor_settings = array(
-                    'textarea_name' => 'hypercart_contactus_editor',
-                    'media_buttons' => true,
-                    'teeny'         => false,
-                    'quicktags'     => true,
-                    'tinymce'       => array(
-                        'toolbar1' => 'formatselect,bold,italic,link,unlink,bullist,numlist,blockquote,alignleft,aligncenter,alignright,spellchecker,wp_adv',
-                        'toolbar2' => 'strikethrough,hr,forecolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help'
-                    ),
-                );
-
-                // The editor content itself (user-generated) is not automatically translated. 
-                // But the labels and buttons around it are translatable.
-                wp_editor($content, 'hypercart_contactus_editor_id', $editor_settings);
-                ?>
-                <p>
-                    <input type="submit" name="hypercart_contactus_submit" class="button button-primary" value="<?php esc_attr_e('Save Changes', 'hypercart-contactus'); ?>">
-                </p>
+            <h1>Hello Bar Settings</h1>
+            <form method="post" action="options.php">
+                <?php settings_fields(self::OPTION_NAME); ?>
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="display_top">Display Hello Bar at Top of Pages</label>
+                        </th>
+                        <td>
+                            <input type="checkbox" name="hello_bar_settings[display_top]" id="display_top" value="1" <?php checked(1, $settings['display_top'] ?? 0); ?>>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="display_footer">Display Also on Footer</label>
+                        </th>
+                        <td>
+                            <input type="checkbox" name="hello_bar_settings[display_footer]" id="display_footer" value="1" <?php checked(1, $settings['display_footer'] ?? 0); ?>>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="message">Message</label>
+                        </th>
+                        <td>
+                            <input type="text" name="hello_bar_settings[message]" id="message" value="<?php echo esc_attr($settings['message'] ?? 'This is your KISS Hello Bar Plugin message'); ?>" class="regular-text">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="bg_color">Message Bar Background Color</label>
+                        </th>
+                        <td>
+                            <input type="color" name="hello_bar_settings[bg_color]" id="bg_color" value="<?php echo esc_attr($settings['bg_color'] ?? '#000000'); ?>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="cta_label">CTA Button Label</label>
+                        </th>
+                        <td>
+                            <input type="text" name="hello_bar_settings[cta_label]" id="cta_label" value="<?php echo esc_attr($settings['cta_label'] ?? 'Click Me'); ?>" class="regular-text">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="cta_link">CTA Button Link</label>
+                        </th>
+                        <td>
+                            <input type="url" name="hello_bar_settings[cta_link]" id="cta_link" value="<?php echo esc_attr($settings['cta_link'] ?? ''); ?>" class="regular-text">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="cta_color">CTA Button Color</label>
+                        </th>
+                        <td>
+                            <input type="color" name="hello_bar_settings[cta_color]" id="cta_color" value="<?php echo esc_attr($settings['cta_color'] ?? '#0000ff'); ?>">
+                        </td>
+                    </tr>
+                </table>
+                <?php submit_button(); ?>
             </form>
         </div>
         <?php
     }
 
-    /**
-     * Register our settings (this ensures they are whitelisted)
-     */
-    public function register_settings() {
-        register_setting('hypercart_contactus_settings_group', $this->option_name);
-    }
-
-    /**
-     * Shortcode callback to render the contact info
-     */
-    public function render_contact_info() {
-        $content = get_option($this->option_name, '');
-        $output = wpautop($content);
-
-        // Only append edit link for admin/editor users
-        if ( is_user_logged_in() && ( current_user_can('manage_options') || current_user_can('edit_pages') ) ) {
-            $edit_url = admin_url('tools.php?page=hypercart-contactus-settings');
-            $output .= ' <a href="' . esc_url($edit_url) . '" style="font-size: 0.9em; text-decoration: underline;">' . __('Edit', 'hypercart-contactus') . '</a>';
-        }
-
+    public function sanitize_settings($input) {
+        $output = [];
+        $output['display_top'] = !empty($input['display_top']) ? 1 : 0;
+        $output['display_footer'] = !empty($input['display_footer']) ? 1 : 0;
+        $output['message'] = sanitize_text_field($input['message']);
+        $output['bg_color'] = sanitize_hex_color($input['bg_color']);
+        $output['cta_label'] = sanitize_text_field($input['cta_label']);
+        $output['cta_link'] = esc_url_raw($input['cta_link']);
+        $output['cta_color'] = sanitize_hex_color($input['cta_color']);
         return $output;
     }
 
-    /**
-     * Allow shortcodes to run in block-based widgets
-     */
-    public function enable_shortcodes_in_block_widgets($content, $widget, $args) {
-        return do_shortcode($content);
+    public function enqueue_hello_bar_styles() {
+        $settings = get_option(self::OPTION_NAME, []);
+        $contrast_color = $this->get_contrast_color($settings['bg_color'] ?? '#000000');
+        $cta_contrast = $this->get_contrast_color($settings['cta_color'] ?? '#0000ff');
+        echo "<style>
+            .hello-bar {
+                position: fixed;
+                width: 100%;
+                background-color: {$settings['bg_color']};
+                color: {$contrast_color};
+                text-align: center;
+                padding: 10px;
+                z-index: 1000;
+            }
+            .hello-bar .cta-button {
+                background-color: {$settings['cta_color']};
+                color: {$cta_contrast};
+                padding: 5px 10px;
+                border: none;
+                text-decoration: none;
+                border-radius: 3px;
+            }
+            body.admin-bar .hello-bar-top {
+                top: 32px;
+            }
+        </style>";
+    }
+
+    public function display_hello_bar() {
+        $settings = get_option(self::OPTION_NAME, []);
+        if (!empty($settings['display_top'])) {
+            echo $this->get_hello_bar_html('hello-bar-top');
+        }
+        if (!empty($settings['display_footer'])) {
+            echo $this->get_hello_bar_html('hello-bar-footer');
+        }
+    }
+
+    private function get_hello_bar_html($class) {
+        $settings = get_option(self::OPTION_NAME, []);
+        $cta_label = esc_html($settings['cta_label'] ?? 'Click Me');
+        $cta_link = esc_url($settings['cta_link'] ?? '#');
+        $message = esc_html($settings['message'] ?? 'This is your KISS Plugin Hello Bar message');
+        return "<div class='hello-bar {$class}'>
+            <span>{$message}</span>
+            <a href='{$cta_link}' class='cta-button'>{$cta_label}</a>
+        </div>";
+    }
+
+    private function get_contrast_color($hex) {
+        $r = hexdec(substr($hex, 1, 2));
+        $g = hexdec(substr($hex, 3, 2));
+        $b = hexdec(substr($hex, 5, 2));
+        return ($r * 0.299 + $g * 0.587 + $b * 0.114) > 186 ? '#000000' : '#ffffff';
+    }
+
+    public function add_settings_link($links) {
+        $settings_link = '<a href="options-general.php?page=hello-bar-settings">Settings</a>';
+        array_unshift($links, $settings_link);
+        return $links;
     }
 }
 
-// Initialize the class
-new Hypercart_ContactUs_Shortcode();
-
-// Run activation hook to pre-populate on first activation
-register_activation_hook(__FILE__, array('Hypercart_ContactUs_Shortcode', 'activate_plugin'));
+new HelloBarPlugin();
