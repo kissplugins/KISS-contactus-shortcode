@@ -1,10 +1,11 @@
 <?php
 /**
- * Plugin Name: KISS Plugins - Contact Us Shortcode
- * Description: Provides a [contactus] shortcode and a settings page with a rich text editor for company's contact details. Allows shortcodes in classic and block-based widget areas.
- * Version: 1.0.4
- * Author: Hypercart
- * Author URI: https://kissplugins.com
+ * Plugin Name: Hypercart - Contact Us Shortcode - O1
+ * Description: Provides a [contactus] shortcode and a settings page with a rich text editor for company's contact details. Pre-populates from WooCommerce store address on first install. Allows shortcodes in classic and block-based widget areas.
+ * Version: 1.0.6
+ * Author: Your Name
+ * Text Domain: hypercart-contactus
+ * Domain Path: /languages
  */
 
 // Exit if accessed directly.
@@ -17,7 +18,10 @@ class Hypercart_ContactUs_Shortcode {
     private $option_name = 'hypercart_contactus_info';
 
     public function __construct() {
-        // Hook to add admin menu (under Tools now)
+        // Load plugin text domain for translations
+        add_action('plugins_loaded', array($this, 'load_textdomain'));
+
+        // Hook to add admin menu (under Tools)
         add_action('admin_menu', array($this, 'add_settings_page'));
 
         // Register shortcode
@@ -35,15 +39,69 @@ class Hypercart_ContactUs_Shortcode {
     }
 
     /**
+     * Load plugin text domain for i18n
+     */
+    public function load_textdomain() {
+        load_plugin_textdomain('hypercart-contactus', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    }
+
+    /**
+     * Runs on plugin activation
+     */
+    public static function activate_plugin() {
+        $instance = new self();
+        $current_content = get_option($instance->option_name, '');
+
+        // Only populate if empty
+        if (empty($current_content)) {
+            // Check if WooCommerce is active
+            if (class_exists('WooCommerce')) {
+                $business_name = get_bloginfo('name');
+                $address1 = get_option('woocommerce_store_address', '');
+                $address2 = get_option('woocommerce_store_address_2', '');
+                $city     = get_option('woocommerce_store_city', '');
+                $postcode = get_option('woocommerce_store_postcode', '');
+                $default_country = get_option('woocommerce_default_country', '');
+                
+                $country = $default_country;
+                $state = '';
+                if (strpos($default_country, ':') !== false) {
+                    list($country, $state) = explode(':', $default_country);
+                }
+                
+                // Assemble address format:
+                // Business Name
+                // Address line 1
+                // Address line 2 (if exists)
+                // City, State, ZIP/Postal Code
+                // Country
+                $formatted = $business_name . "\n" .
+                             $address1 . "\n";
+                if (!empty($address2)) {
+                    $formatted .= $address2 . "\n";
+                }
+                
+                $line3_parts = array_filter([$city, $state, $postcode]);
+                $formatted .= implode(', ', $line3_parts) . "\n" . $country;
+                
+                // Update only if we have at least some meaningful data
+                if (trim($formatted) !== '') {
+                    update_option($instance->option_name, wp_kses_post($formatted));
+                }
+            }
+        }
+    }
+
+    /**
      * Add settings page under "Tools"
      */
     public function add_settings_page() {
         add_management_page(
-            'Hypercart - Contact Us Shortcode', // Page title
-            'Contact Us',                       // Menu title
-            'manage_options',                   // Capability
-            'hypercart-contactus-settings',     // Menu slug
-            array($this, 'settings_page_html')  // Callback
+            __('Hypercart - Contact Us Shortcode', 'hypercart-contactus'), // Page title
+            __('Contact Us', 'hypercart-contactus'),                       // Menu title
+            'manage_options',                                              // Capability
+            'hypercart-contactus-settings',                                // Menu slug
+            array($this, 'settings_page_html')                             // Callback
         );
     }
 
@@ -60,14 +118,14 @@ class Hypercart_ContactUs_Shortcode {
             $raw_content = isset($_POST['hypercart_contactus_editor']) ? wp_unslash($_POST['hypercart_contactus_editor']) : '';
             $content = wp_kses_post($raw_content);
             update_option($this->option_name, $content);
-            echo '<div class="updated"><p>Contact information saved successfully.</p></div>';
+            echo '<div class="updated"><p>' . __('Contact information saved successfully.', 'hypercart-contactus') . '</p></div>';
         }
 
         // Get the stored content
         $content = get_option($this->option_name, '');
         ?>
         <div class="wrap">
-            <h1>Hypercart - Contact Us Shortcode</h1>
+            <h1><?php _e('Hypercart - Contact Us Shortcode', 'hypercart-contactus'); ?></h1>
             <form method="post" action="">
                 <?php
                 wp_nonce_field('hypercart_contactus_save', 'hypercart_contactus_nonce');
@@ -83,10 +141,12 @@ class Hypercart_ContactUs_Shortcode {
                     ),
                 );
 
+                // The editor content itself (user-generated) is not automatically translated. 
+                // But the labels and buttons around it are translatable.
                 wp_editor($content, 'hypercart_contactus_editor_id', $editor_settings);
                 ?>
                 <p>
-                    <input type="submit" name="hypercart_contactus_submit" class="button button-primary" value="Save Changes">
+                    <input type="submit" name="hypercart_contactus_submit" class="button button-primary" value="<?php esc_attr_e('Save Changes', 'hypercart-contactus'); ?>">
                 </p>
             </form>
         </div>
@@ -110,7 +170,7 @@ class Hypercart_ContactUs_Shortcode {
         // Only append edit link for admin/editor users
         if ( is_user_logged_in() && ( current_user_can('manage_options') || current_user_can('edit_pages') ) ) {
             $edit_url = admin_url('tools.php?page=hypercart-contactus-settings');
-            $output .= ' <a href="' . esc_url($edit_url) . '" style="font-size: 0.9em; text-decoration: underline;">Edit</a>';
+            $output .= ' <a href="' . esc_url($edit_url) . '" style="font-size: 0.9em; text-decoration: underline;">' . __('Edit', 'hypercart-contactus') . '</a>';
         }
 
         return $output;
@@ -124,4 +184,8 @@ class Hypercart_ContactUs_Shortcode {
     }
 }
 
+// Initialize the class
 new Hypercart_ContactUs_Shortcode();
+
+// Run activation hook to pre-populate on first activation
+register_activation_hook(__FILE__, array('Hypercart_ContactUs_Shortcode', 'activate_plugin'));
