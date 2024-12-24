@@ -4,7 +4,7 @@ Contributors: hypercart, kissplugins
 Tags: shortcode, contact us, contact details, settings page, widget support
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.0.4
+Stable tag: 1.0.6
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -57,6 +57,9 @@ For questions, customization requests, or feedback, contact us at:
 This plugin is released under the GNU General Public License v2 (GPLv2 or later). For more details, see the included `LICENSE` file or visit [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html).
 
 == Changelog ==
+
+== 1.0.7 ==
+- Added plugin update checker feature
 
 == 1.0.6 ==
 - support Internationalization (i18n)
