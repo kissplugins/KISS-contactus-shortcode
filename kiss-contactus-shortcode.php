@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KISS - Contact Us Shortcode - O1
  * Description: Provides a [contactus] shortcode and a settings page with a rich text editor for company's contact details. Pre-populates from WooCommerce store address on first install. Allows shortcodes in classic and block-based widget areas.
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: Hypercart
  * Author URI: https://kissplugins.com
  * Text Domain: hypercart-contactus
@@ -13,6 +13,17 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+// Include the Plugin Update Checker
+require plugin_dir_path(__FILE__) . 'lib/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/kissplugins/KISS-contactus-shortcode',
+    __FILE__,
+    'hypercart-contactus'
+);
+// Optional: Set the branch that contains the stable release.
+$myUpdateChecker->setBranch('main');
 
 class Hypercart_ContactUs_Shortcode {
 
