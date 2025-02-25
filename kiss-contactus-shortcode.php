@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Hypercart - Contact Us Shortcode - O1
+ * Plugin Name: KISS - Contact Us Shortcode - O1
  * Description: Provides a [contactus] shortcode and a settings page with a rich text editor for company's contact details. Pre-populates from WooCommerce store address on first install. Allows shortcodes in classic and block-based widget areas.
  * Version: 1.0.6
  * Author: Hypercart

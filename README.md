@@ -1,5 +1,5 @@
 
-=== KISS Plugins - Contact Us Shortcode ===
+=== KISS - Contact Us Shortcode ===
 Contributors: hypercart, kissplugins
 Tags: shortcode, contact us, contact details, settings page, widget support
 Requires at least: 5.0
