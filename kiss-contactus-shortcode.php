@@ -39,6 +39,9 @@ class Hypercart_ContactUs_Shortcode {
         // Register shortcode
         add_shortcode('contactus', array($this, 'render_contact_info'));
 
+        // Register shortcode
+        add_shortcode('contact-us', array($this, 'render_contact_info'));
+
         // Register plugin settings
         add_action('admin_init', array($this, 'register_settings'));
 
@@ -150,8 +153,13 @@ class Hypercart_ContactUs_Shortcode {
             <p style="font-weight: 800;font-size: 20px;">
                 <label for="hypercart-contactus-shortcode"><?php _e('Copy shortcode:', 'hypercart-contactus'); ?></label>
                 <input type="text" id="hypercart-contactus-shortcode" value="[contactus]" readonly style="margin-right: 10px;font-weight: 300;font-size: 20px;">
-                <button id="hypercart-copy-shortcode" class="button button-primary" style="font-size: 20px;"><?php _e('Copy shortcode', 'hypercart-contactus'); ?></button>
+                <button id="hypercart-copy-shortcode-contactus" class="button button-primary" style="font-size: 20px;"><?php _e('Copy shortcode', 'hypercart-contactus'); ?></button>
             </p>
+            <!-- <p style="font-weight: 800;font-size: 20px;">
+                <label for="hypercart-contact-us-shortcode"><?php _e('Alternative shortcode:', 'hypercart-contactus'); ?></label>
+                <input type="text" id="hypercart-contact-us-shortcode" value="[contact-us]" readonly style="margin-right: 10px;font-weight: 300;font-size: 20px;">
+                <button id="hypercart-copy-shortcode-contact-us" class="button button-primary" style="font-size: 20px;"><?php _e('Copy shortcode', 'hypercart-contactus'); ?></button>
+            </p> -->
             <form method="post" action="">
                 <?php
                 wp_nonce_field('hypercart_contactus_save', 'hypercart_contactus_nonce');
