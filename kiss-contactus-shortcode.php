@@ -143,9 +143,15 @@ class Hypercart_ContactUs_Shortcode {
 
         // Get the stored content
         $content = get_option($this->option_name, '');
+        wp_enqueue_script('hypercart-contactus-admin-js', plugin_dir_url(__FILE__) . 'assets/js/admin_script.js', array(), '1.0.0', true);
         ?>
         <div class="wrap">
             <h1><?php _e('Hypercart - Contact Us Shortcode', 'hypercart-contactus'); ?></h1>
+            <p style="font-weight: 800;font-size: 20px;">
+                <label for="hypercart-contactus-shortcode"><?php _e('Copy shortcode:', 'hypercart-contactus'); ?></label>
+                <input type="text" id="hypercart-contactus-shortcode" value="[contactus]" readonly style="margin-right: 10px;font-weight: 300;font-size: 20px;">
+                <button id="hypercart-copy-shortcode" class="button button-primary" style="font-size: 20px;"><?php _e('Copy shortcode', 'hypercart-contactus'); ?></button>
+            </p>
             <form method="post" action="">
                 <?php
                 wp_nonce_field('hypercart_contactus_save', 'hypercart_contactus_nonce');
