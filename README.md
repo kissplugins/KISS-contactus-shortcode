@@ -1,5 +1,14 @@
 # KISS - Contact Us Shortcode
 
+**Contributors**: hypercart, kissplugins  
+**Tags**: shortcode, contact us, contact details, settings page, widget support  
+**Requires at least**: 5.0  
+**Tested up to**: 6.4  
+**Stable tag**: 1.0.6  
+**Requires PHP**: 7.4  
+**License**: GPLv2 or later  
+**License URI**: [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)
+
 > **KISS = Keep It Simple (Stupid)**  
 > Our plugins are designed to do just one thing—and do it very well.
 
