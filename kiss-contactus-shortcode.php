@@ -2,7 +2,7 @@
 /**
  * Plugin Name: KISS - Contact Us Shortcode - O1
  * Description: Provides a [contactus] shortcode and a settings page with a rich text editor for company's contact details. Pre-populates from WooCommerce store address on first install. Allows shortcodes in classic and block-based widget areas.
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: Hypercart
  * Author URI: https://kissplugins.com
  * Text Domain: hypercart-contactus
@@ -13,6 +13,17 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+// Include the Plugin Update Checker
+require plugin_dir_path(__FILE__) . 'lib/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+$myUpdateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/kissplugins/KISS-contactus-shortcode',
+    __FILE__,
+    'hypercart-contactus'
+);
+// Optional: Set the branch that contains the stable release.
+$myUpdateChecker->setBranch('main');
 
 class Hypercart_ContactUs_Shortcode {
 
@@ -27,6 +38,9 @@ class Hypercart_ContactUs_Shortcode {
 
         // Register shortcode
         add_shortcode('contactus', array($this, 'render_contact_info'));
+
+        // Register shortcode
+        add_shortcode('contact-us', array($this, 'render_contact_info'));
 
         // Register plugin settings
         add_action('admin_init', array($this, 'register_settings'));
@@ -132,9 +146,20 @@ class Hypercart_ContactUs_Shortcode {
 
         // Get the stored content
         $content = get_option($this->option_name, '');
+        wp_enqueue_script('hypercart-contactus-admin-js', plugin_dir_url(__FILE__) . 'assets/js/admin_script.js', array(), '1.0.0', true);
         ?>
         <div class="wrap">
             <h1><?php _e('Hypercart - Contact Us Shortcode', 'hypercart-contactus'); ?></h1>
+            <p style="font-weight: 800;font-size: 20px;">
+                <label for="hypercart-contactus-shortcode"><?php _e('Copy shortcode:', 'hypercart-contactus'); ?></label>
+                <input type="text" id="hypercart-contactus-shortcode" value="[contactus]" readonly style="margin-right: 10px;font-weight: 300;font-size: 20px;">
+                <button id="hypercart-copy-shortcode-contactus" class="button button-primary" style="font-size: 20px;"><?php _e('Copy shortcode', 'hypercart-contactus'); ?></button>
+            </p>
+            <!-- <p style="font-weight: 800;font-size: 20px;">
+                <label for="hypercart-contact-us-shortcode"><?php _e('Alternative shortcode:', 'hypercart-contactus'); ?></label>
+                <input type="text" id="hypercart-contact-us-shortcode" value="[contact-us]" readonly style="margin-right: 10px;font-weight: 300;font-size: 20px;">
+                <button id="hypercart-copy-shortcode-contact-us" class="button button-primary" style="font-size: 20px;"><?php _e('Copy shortcode', 'hypercart-contactus'); ?></button>
+            </p> -->
             <form method="post" action="">
                 <?php
                 wp_nonce_field('hypercart_contactus_save', 'hypercart_contactus_nonce');

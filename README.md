@@ -1,71 +1,103 @@
+# KISS - Contact Us Shortcode
 
-=== KISS - Contact Us Shortcode ===
-Contributors: hypercart, kissplugins
-Tags: shortcode, contact us, contact details, settings page, widget support
-Requires at least: 5.0
-Tested up to: 6.4
-Stable tag: 1.0.4
-Requires PHP: 7.4
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+**Contributors**: hypercart, kissplugins  
+**Tags**: shortcode, contact us, contact details, settings page, widget support  
+**Requires at least**: 5.0  
+**Tested up to**: 6.4  
+**Stable tag**: 1.0.6  
+**Requires PHP**: 7.4  
+**License**: GPLv2 or later  
+**License URI**: [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)
 
-**KISS = Keep It Simple (Stupid)**. KISS Plugins are designed to do one thing only. And we believe that one thing should be done very well.
+> **KISS = Keep It Simple (Stupid)**  
+> Our plugins are designed to do just one thing—and do it very well.
 
-== Description ==
+The **KISS Contact Us Shortcode** plugin lets you display customizable contact information anywhere on your WordPress site using a simple shortcode. No upsells, no freemium gimmicks — just the features you need.
 
-The **KISS Contact Us Shortcode** plugin provides a simple, customizable shortcode for embedding contact information anywhere on your WordPress site. It's lightweight, free, and does not include any upsells or freemium features—what you see is what you get.
+---
 
-### Key Features:
-- **Editable Contact Details**: Use a settings page to manage your company's contact information. Supports hyperlinks and common HTML formatting.
-- **Shortcode Support**: Embed your contact details on posts, pages, and widgets using the `[contactus]` shortcode.
-- **Quick Editing**: Displays an "Edit" button for admin and editor users, linking directly to the settings page.
-- **Widget Compatibility**: Works with both classic and block-based widgets.
+## ✨ Features
 
-This plugin is perfect for users looking for a simple, reliable way to manage and display contact details site-wide.
+- Customizable contact info with HTML support
+- `[contactus]` shortcode for posts, pages, and widgets
+- "Edit" link for admin/editor roles for quick access
+- Works with both classic and block-based widgets
+- Lightweight and fully free (no locked features)
 
-### Beta Notice:
-This software is in **BETA** and still being tested and refined. Use at your own risk. We strongly recommend testing on a staging environment before deploying to a live site.
+---
 
-== Installation ==
+## 🛠️ Installation
 
-1. Upload the plugin folder to the `/wp-content/plugins/` directory or install it directly via the WordPress Plugin Directory.
-2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Navigate to `Tools > Contact Us` to add or edit your contact details.
-4. Use the `[contactus]` shortcode to display the contact information on your site.
+1. **Download** the plugin ZIP from [git repository](https://github.com/kissplugins/KISS-contactus-shortcode).
+2. In your WordPress Admin, go to **Plugins > Add New > Upload Plugin**.
+3. Choose the ZIP file and click **Install Now**.
+4. After installation, click **Activate Plugin**.
+3. Go to **Tools > Contact Us** to add/edit your contact info.
+4. Use the `[contactus]` shortcode wherever you want the contact details to appear.
 
-== How to Use ==
+---
 
-1. Find the plugin under **Tools > Contact Us**. Here, you can edit the contact details using a rich text editor.
-2. Use the `[contactus]` shortcode to embed the contact details anywhere on your site—posts, pages, and widget areas.
-3. Admins and editors will see an "Edit" link below the displayed content for quick updates.
+## ⚙️ How to Use
 
-== Road Map ==
+1. Navigate to **Tools > Contact Us** in your WordPress dashboard.
+2. Use the rich text editor to enter your contact details (HTML and links supported).
+3. Add `[contactus]` to any post, page, or widget.
+4. Logged-in Admins and Editors will see an **Edit** link below the contact block for easy updates.
 
-Planned features and updates:
+---
+
+## 🧪 Beta Notice
+
+This plugin is currently in **BETA** and under active development.  
+Please test thoroughly on a staging/development site before using in production.
+
+---
+
+## 🛣️ Roadmap
+
+Planned Features:
 - TBD (To Be Determined)
 
-We welcome suggestions and feedback! Contact us at the email addresses below.
+We welcome your suggestions. Please contact us using the info below.
 
-== Support ==
+---
 
-For questions, customization requests, or feedback, contact us at:
-- devops@kissplugins.com
-- noel@kissplugins.com
+## 📬 Contact / Support
 
-== License ==
+Have questions or requests?  
+📧 devops@kissplugins.com  
+📧 noel@kissplugins.com
 
-This plugin is released under the GNU General Public License v2 (GPLv2 or later). For more details, see the included `LICENSE` file or visit [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html).
+---
 
-== Changelog ==
+## 🧾 License
 
-== 1.0.6 ==
-- support Internationalization (i18n)
+This plugin is released under the **GNU General Public License v2 or later**.  
+Use at your own risk. Please review the code before deploying.
+
+🔗 License: [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html)  
+📄 See the included `LICENSE` file in this repository for full terms.
+
+---
+
+## 📝 Changelog
+
+### 1.0.7
+- Added plugin update checker feature
+
+### 1.0.6
+- Internationalization (i18n) support
 - Added Text Domain
 
-= 1.0.4 =
+### 1.0.4
 - Initial release
 
-**Follow Us on Blue Sky:**
-https://bsky.app/profile/kissplugins.bsky.social
+---
 
-© Copyright Hypercart D.B.A. Neochrome, Inc.
+## 🔗 Follow Us
+
+**BlueSky**: [https://bsky.app/profile/kissplugins.bsky.social](https://bsky.app/profile/kissplugins.bsky.social)
+
+---
+
+© Hypercart D.B.A. Neochrome, Inc.
